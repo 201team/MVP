@@ -1,2 +1,2 @@
-# MVP
-mvp in android
+# njcsrNew
+share on github
