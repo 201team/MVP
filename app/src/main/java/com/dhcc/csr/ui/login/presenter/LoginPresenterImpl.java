@@ -6,10 +6,13 @@ import com.dhcc.csr.ui.login.contact.LoginContact;
 import com.dhcc.csr.ui.login.model.LoginService;
 import com.orhanobut.logger.Logger;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
@@ -43,40 +46,75 @@ public class LoginPresenterImpl implements LoginContact.LoginPresenter {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UrlProtocol.MAIN_HOST)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
+
         LoginService loginService = retrofit.create(LoginService.class);
-        Call<String> stringCall = loginService.loginNew(name, pass, type, deviceToken);
-        stringCall.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (ObjectUtils.isNotEmpty(mView)) {
-                    mView.dismissLoginDialog();
-                }
-                if (200 == response.code()) {
-                    String result = response.body();
-                    Logger.d("LoginService返回:" + result);
-                    if (ObjectUtils.isNotEmpty(mView)) {
-                        mView.loginSuccess(result);
+        Observable<String> observable = loginService.loginObservable(name, pass, type, deviceToken);
+        //通过Observable发起请求
+        observable
+                .subscribeOn(Schedulers.io())//指定网络请求在io后台线程中进行
+                .observeOn(AndroidSchedulers.mainThread())//指定observer回调在UI主线程中进行
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Logger.d("onSubscribe");
                     }
-                } else {
-                    if (ObjectUtils.isNotEmpty(mView)) {
-                        mView.loginFailure();
+
+                    @Override
+                    public void onNext(String s) {
+                        Logger.d("onNext" + s);
+                        if (ObjectUtils.isNotEmpty(mView)) {
+                            mView.loginSuccess(s);
+                        }
                     }
-                }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.d("onError" + e.getMessage());
+                        if (ObjectUtils.isNotEmpty(mView)) {
+                            mView.loginFailure();
+                            mView.dismissLoginDialog();
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Logger.d("失败了" + t.getMessage());
-                if (ObjectUtils.isNotEmpty(mView)) {
-                    mView.loginFailure();
-                    mView.dismissLoginDialog();
-                }
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        Logger.d("onComplete");
+                    }
+                });
+
+//        Call<String> stringCall = loginService.loginNew(name, pass, type, deviceToken);
+//        stringCall.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response) {
+//                if (ObjectUtils.isNotEmpty(mView)) {
+//                    mView.dismissLoginDialog();
+//                }
+//                if (200 == response.code()) {
+//                    String result = response.body();
+//                    Logger.d("LoginService返回:" + result);
+//                    if (ObjectUtils.isNotEmpty(mView)) {
+//                        mView.loginSuccess(result);
+//                    }
+//                } else {
+//                    if (ObjectUtils.isNotEmpty(mView)) {
+//                        mView.loginFailure();
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                Logger.d("失败了" + t.getMessage());
+//                if (ObjectUtils.isNotEmpty(mView)) {
+//                    mView.loginFailure();
+//                    mView.dismissLoginDialog();
+//                }
+//            }
+//        });
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dhcc.csr.ui.login.model;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -22,4 +23,9 @@ public interface LoginService {
     @POST("MobileLogin")
     Call<String> loginNew(@Field("userId") String userId, @Field("ps") String ps,
                           @Field("type") String type, @Field("deviceToken") String deviceToken);
+
+    @FormUrlEncoded
+    @POST("MobileLogin")
+    Observable<String> loginObservable(@Field("userId") String userId, @Field("ps") String ps,
+                                       @Field("type") String type, @Field("deviceToken") String deviceToken);
 }

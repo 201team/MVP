@@ -7,5 +7,5 @@ package com.dhcc.csr.network;
  */
 public interface UrlProtocol {
     //强请求主地址
-    String MAIN_HOST = "http://10.20.202.242:8080/Test/";
+    String MAIN_HOST = "http://10.20.203.18:8080/Test/";
 }
