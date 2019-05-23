@@ -4,7 +4,6 @@ import com.blankj.utilcode.util.ObjectUtils;
 import com.dhcc.csr.network.UrlProtocol;
 import com.dhcc.csr.ui.login.contact.LoginContact;
 import com.dhcc.csr.ui.login.model.LoginService;
-import com.dhcc.csr.util.AESOperator;
 import com.orhanobut.logger.Logger;
 
 import retrofit2.Call;
@@ -40,7 +39,6 @@ public class LoginPresenterImpl implements LoginContact.LoginPresenter {
         }
 
         Logger.d("登陆参数:" + name + "," + pass + "," + type + "," + deviceToken);
-        final AESOperator operator = AESOperator.getInstance();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UrlProtocol.MAIN_HOST)
@@ -49,53 +47,36 @@ public class LoginPresenterImpl implements LoginContact.LoginPresenter {
                 .build();
 
         LoginService loginService = retrofit.create(LoginService.class);
-        try {
-            Call<String> stringCall = loginService.loginNew(operator.encrypt(name), operator.encrypt(pass),
-                    operator.encrypt(type), operator.encrypt(deviceToken));
-            stringCall.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    if (ObjectUtils.isNotEmpty(mView)) {
-                        mView.dismissLoginDialog();
-                    }
-                    if (200 == response.code()) {
-                        String result = response.body();
-                        try {
-                            result = operator.decrypt(result);
-                            Logger.d("LoginService返回:" + result);
-                            if (ObjectUtils.isNotEmpty(mView)) {
-                                mView.loginSuccess(result);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            if (ObjectUtils.isNotEmpty(mView)) {
-                                mView.loginFailure();
-                            }
-                        }
-                    } else {
-                        if (ObjectUtils.isNotEmpty(mView)) {
-                            mView.loginFailure();
-                        }
-                    }
-
+        Call<String> stringCall = loginService.loginNew(name, pass, type, deviceToken);
+        stringCall.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (ObjectUtils.isNotEmpty(mView)) {
+                    mView.dismissLoginDialog();
                 }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    Logger.d("失败了" + t.getMessage());
+                if (200 == response.code()) {
+                    String result = response.body();
+                    Logger.d("LoginService返回:" + result);
+                    if (ObjectUtils.isNotEmpty(mView)) {
+                        mView.loginSuccess(result);
+                    }
+                } else {
                     if (ObjectUtils.isNotEmpty(mView)) {
                         mView.loginFailure();
-                        mView.dismissLoginDialog();
                     }
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (ObjectUtils.isNotEmpty(mView)) {
-                mView.loginFailure();
-                mView.dismissLoginDialog();
-            }
-        }
 
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Logger.d("失败了" + t.getMessage());
+                if (ObjectUtils.isNotEmpty(mView)) {
+                    mView.loginFailure();
+                    mView.dismissLoginDialog();
+                }
+            }
+        });
     }
+
 }
