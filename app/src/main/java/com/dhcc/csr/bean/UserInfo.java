@@ -1,17 +1,10 @@
 package com.dhcc.csr.bean;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
-import com.dhcc.csr.db.greendao.gen.DaoSession;
-import com.dhcc.csr.db.greendao.gen.UserInfoDao;
-
 /**
  * @author wlsh
  * @date 2019/1/17 11:50
  * @description 用户
  */
-@Entity(active = true,nameInDb = "USER_INFO")
 public class UserInfo {
     private Long id;
     private String name;  //人员名称
@@ -52,68 +45,7 @@ public class UserInfo {
     private Long userSort; //人员排序
     private String deptLevel; //部门层级
     private String jobSituation;//员工在职情况
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 437952339)
-    private transient UserInfoDao myDao;
 
-    @Generated(hash = 1633328855)
-    public UserInfo(Long id, String name, String loginname, String password,
-            String weight, String email, String mobile, String phone, String rtxid,
-            String gender, String levelgroupid, String levelgroupname, String path,
-            String pathName, String parentid, String orgId, String orgName,
-            String roleId, String roleName, String jobId, String jobName,
-            String groupId, String groupName, String relation, String isLocal,
-            String isDelete, String isUdelete, String isULocal, String valid,
-            String politicalStatus, String jobCity, String notionality,
-            String jobLayer, String skillLevel, String jobType, Long deptSort,
-            Long userSort, String deptLevel, String jobSituation) {
-        this.id = id;
-        this.name = name;
-        this.loginname = loginname;
-        this.password = password;
-        this.weight = weight;
-        this.email = email;
-        this.mobile = mobile;
-        this.phone = phone;
-        this.rtxid = rtxid;
-        this.gender = gender;
-        this.levelgroupid = levelgroupid;
-        this.levelgroupname = levelgroupname;
-        this.path = path;
-        this.pathName = pathName;
-        this.parentid = parentid;
-        this.orgId = orgId;
-        this.orgName = orgName;
-        this.roleId = roleId;
-        this.roleName = roleName;
-        this.jobId = jobId;
-        this.jobName = jobName;
-        this.groupId = groupId;
-        this.groupName = groupName;
-        this.relation = relation;
-        this.isLocal = isLocal;
-        this.isDelete = isDelete;
-        this.isUdelete = isUdelete;
-        this.isULocal = isULocal;
-        this.valid = valid;
-        this.politicalStatus = politicalStatus;
-        this.jobCity = jobCity;
-        this.notionality = notionality;
-        this.jobLayer = jobLayer;
-        this.skillLevel = skillLevel;
-        this.jobType = jobType;
-        this.deptSort = deptSort;
-        this.userSort = userSort;
-        this.deptLevel = deptLevel;
-        this.jobSituation = jobSituation;
-    }
-
-    @Generated(hash = 1279772520)
-    public UserInfo() {
-    }
 
     public Long getId() {
         return id;
@@ -427,46 +359,4 @@ public class UserInfo {
         this.jobSituation = jobSituation;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 821180768)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getUserInfoDao() : null;
-    }
 }
